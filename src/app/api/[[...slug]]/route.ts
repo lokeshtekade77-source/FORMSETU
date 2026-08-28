@@ -39,9 +39,10 @@ const SECTIONS = [
   { slug: "eligibility", title: "Eligibility", description: "Synthetic eligibility", required: true }
 ];
 
-const DOCUMENTS = [
-  { id: "doc-1", application_id: "demo-recruitment-2026", document_requirement_id: "req-photo", document_type: "photo", label: "Photograph", status: "missing", file_name: null, file_path: null, file_size_kb: null, mime_type: null, width: null, height: null, validation_status: "pending", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: null },
-  { id: "doc-2", application_id: "demo-recruitment-2026", document_requirement_id: "req-sig", document_type: "signature", label: "Signature", status: "missing", file_name: null, file_path: null, file_size_kb: null, mime_type: null, width: null, height: null, validation_status: "pending", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: null }
+// Mutable document store for demo session
+let documentsStore: any[] = [
+  { id: "doc-1", application_id: "demo-recruitment-2026", document_requirement_id: "req-photo", document_type: "photo", label: "Photograph", required: true, allowed_formats: ["jpg", "jpeg", "png", "webp"], max_size_kb: 50, required_width: 200, required_height: 230, status: "missing", document_id: null, validation_status: "pending", preparation_status: "not_required", file_name: null, original_filename: null, original_size: null, prepared_size: null, original_dimensions: null, prepared_dimensions: null, file_url: null, checks: [], photo_compliance: null, is_compressed: false, compression_ratio: 0, acknowledged: false },
+  { id: "doc-2", application_id: "demo-recruitment-2026", document_requirement_id: "req-sig", document_type: "signature", label: "Signature", required: true, allowed_formats: ["jpg", "jpeg", "png", "webp"], max_size_kb: 50, required_width: 140, required_height: 60, status: "missing", document_id: null, validation_status: "pending", preparation_status: "not_required", file_name: null, original_filename: null, original_size: null, prepared_size: null, original_dimensions: null, prepared_dimensions: null, file_url: null, checks: [], photo_compliance: null, is_compressed: false, compression_ratio: 0, acknowledged: false }
 ];
 
 const APPLICATION = {
@@ -62,23 +63,130 @@ const SESSION = {
   disclaimer: "Independent prototype. Vault-synced application."
 };
 
-function handleRequest(req: NextRequest): NextResponse {
+async function handleRequest(req: NextRequest): Promise<NextResponse> {
   try {
     const pathname = req.nextUrl ? req.nextUrl.pathname : "/api";
     const slugPath = pathname.replace(/^\/api\/?/, "");
+    const method = req.method.toUpperCase();
 
+    // Session & App Routes
     if (slugPath === "sessions" || slugPath.startsWith("sessions/")) {
       return NextResponse.json(SESSION);
     }
     if (slugPath === "applications") {
       return NextResponse.json([APPLICATION]);
     }
+
+    // Application specific document upload route
+    if (slugPath.includes("/documents/upload")) {
+      let requirementId = "req-photo";
+      let originalFilename = "uploaded_photo.jpg";
+      let originalSize = 385000;
+      let dataUrl: string | null = null;
+
+      try {
+        const formData = await req.formData();
+        const file = formData.get("file") as File | null;
+        const reqIdFromForm = formData.get("document_requirement_id") as string | null;
+        if (reqIdFromForm) requirementId = reqIdFromForm;
+
+        if (file && typeof file === "object" && file.name) {
+          originalFilename = file.name;
+          originalSize = file.size || originalSize;
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const base64 = buffer.toString("base64");
+            const mime = file.type || (originalFilename.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg");
+            dataUrl = `data:${mime};base64,${base64}`;
+          } catch {
+            // fallback
+          }
+        }
+      } catch {
+        // fallback if form parsing fails
+      }
+
+      let docSlot = documentsStore.find((d) => d.document_requirement_id === requirementId);
+      if (!docSlot) {
+        docSlot = documentsStore[0];
+      }
+
+      const docTypeLower = (docSlot.document_type || "").toLowerCase();
+      const isPhoto = docTypeLower === "photo" || docTypeLower === "photograph";
+      const docId = `doc-${Date.now()}`;
+      const reqWidth = docSlot.required_width || (isPhoto ? 200 : 140);
+      const reqHeight = docSlot.required_height || (isPhoto ? 230 : 60);
+
+      const targetMaxKb = docSlot.max_size_kb || 50;
+      const targetMaxBytes = targetMaxKb * 1024;
+      const preparedSize = Math.min(Math.round(originalSize * 0.12), targetMaxBytes - 2048);
+      const reductionRatio = Math.round((1 - preparedSize / Math.max(originalSize, 1)) * 1000) / 10;
+
+      // Update in-memory document state
+      docSlot.document_id = docId;
+      docSlot.original_filename = originalFilename;
+      docSlot.file_name = originalFilename;
+      docSlot.original_size = originalSize;
+      docSlot.prepared_size = preparedSize;
+      docSlot.original_dimensions = `${reqWidth * 3}×${reqHeight * 3} px`;
+      docSlot.prepared_dimensions = `${reqWidth}×${reqHeight} px`;
+      docSlot.status = "valid";
+      docSlot.validation_status = "valid";
+      docSlot.preparation_status = "prepared";
+      docSlot.is_compressed = true;
+      docSlot.compression_ratio = reductionRatio;
+      docSlot.compression_status = "compressed";
+      docSlot.acknowledged = false;
+
+      if (dataUrl) {
+        docSlot.file_url = dataUrl;
+      } else if (!docSlot.file_url) {
+        // SVG fallback thumbnail
+        const bgHex = isPhoto ? "e0e7ff" : "f3f4f6";
+        const textHex = isPhoto ? "3730a3" : "1f2937";
+        docSlot.file_url = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${reqWidth}" height="${reqHeight}" viewBox="0 0 ${reqWidth} ${reqHeight}"><rect width="100%" height="100%" fill="%23${bgHex}"/><text x="50%" y="50%" font-size="12" font-family="sans-serif" font-weight="bold" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(docSlot.label)}</text></svg>`;
+      }
+
+      docSlot.checks = [
+        { name: "Format", passed: true, actual: "JPEG/PNG", message: "Allowed image format" },
+        { name: "File Size", passed: true, actual: `${Math.round(preparedSize / 1024)} KB`, message: `Compressed from ${Math.round(originalSize / 1024)} KB (Max ${targetMaxKb} KB)` },
+        { name: "Dimensions", passed: true, actual: `${reqWidth}×${reqHeight} px`, message: `Resized to required ${reqWidth}×${reqHeight} px` }
+      ];
+
+      if (isPhoto) {
+        docSlot.photo_compliance = {
+          pass: true,
+          score: 97,
+          checks: [
+            { name: "Face Visibility", status: "PASS", message: "Clear front-facing portrait detected" },
+            { name: "Background", status: "PASS", message: "Light uniform background verified" },
+            { name: "Sharpness & Contrast", status: "PASS", message: "Optimal exposure and focus" }
+          ],
+          requires_new_photo: false
+        };
+      }
+
+      return NextResponse.json({
+        document_id: docId,
+        name: docSlot.label,
+        document_type: docSlot.document_type,
+        original_size: originalSize,
+        validation_status: "valid",
+        preparation_status: "prepared",
+        checks: docSlot.checks
+      });
+    }
+
     if (slugPath.startsWith("applications")) {
       if (slugPath.endsWith("/requirements")) return NextResponse.json(REQUIREMENTS);
       if (slugPath.endsWith("/sections")) return NextResponse.json(SECTIONS);
       if (slugPath.endsWith("/fields")) return NextResponse.json(FIELDS);
-      if (slugPath.endsWith("/progress")) return NextResponse.json({ progress: 0, completed_fields: 0, total_fields: 18, missing_documents: [] });
-      if (slugPath.endsWith("/documents")) return NextResponse.json(DOCUMENTS);
+      if (slugPath.endsWith("/progress")) {
+        const readyCount = documentsStore.filter((d) => d.status === "valid" || d.preparation_status === "prepared").length;
+        return NextResponse.json({ progress: readyCount === 2 ? 100 : 50, completed_fields: 18, total_fields: 18, missing_documents: [] });
+      }
+      if (slugPath.endsWith("/documents")) return NextResponse.json(documentsStore);
       if (slugPath.endsWith("/validation")) return NextResponse.json({ valid: true, messages: [] });
       if (slugPath.endsWith("/imports")) return NextResponse.json([]);
       if (slugPath.endsWith("/conflicts")) return NextResponse.json([]);
@@ -92,14 +200,116 @@ function handleRequest(req: NextRequest): NextResponse {
       }
       return NextResponse.json(APPLICATION);
     }
+
     if (slugPath.startsWith("previous-applications")) {
       return NextResponse.json([]);
     }
+
+    // Document management endpoints
     if (slugPath === "documents" || slugPath.startsWith("documents/")) {
-      if (slugPath.endsWith("/photo-analysis")) return NextResponse.json({ pass: true, score: 98, checks: [] });
-      if (slugPath.endsWith("/signature-analysis")) return NextResponse.json({ pass: true, score: 95, checks: [] });
-      return NextResponse.json(DOCUMENTS);
+      // Photo Analysis
+      if (slugPath.endsWith("/photo-analysis")) {
+        return NextResponse.json({
+          pass: true,
+          score: 97,
+          checks: [
+            { name: "Face Visibility", status: "PASS", message: "Centered front portrait detected" },
+            { name: "Background", status: "PASS", message: "Uniform light background confirmed" },
+            { name: "Lighting & Sharpness", status: "PASS", message: "Passed quality specs" }
+          ],
+          requires_new_photo: false
+        });
+      }
+
+      // Signature Analysis
+      if (slugPath.endsWith("/signature-analysis")) {
+        return NextResponse.json({
+          pass: true,
+          score: 95,
+          checks: [
+            { name: "Ink Contrast", status: "PASS", message: "Dark legible signature verified" },
+            { name: "Background", status: "PASS", message: "Clean white background verified" }
+          ],
+          requires_new_signature: false
+        });
+      }
+
+      // Prepare Document
+      if (slugPath.endsWith("/prepare")) {
+        const parts = slugPath.split("/");
+        const docId = parts[1];
+        const docSlot = documentsStore.find((d) => d.document_id === docId || d.id === docId) || documentsStore[0];
+        
+        docSlot.status = "valid";
+        docSlot.validation_status = "valid";
+        docSlot.preparation_status = "prepared";
+        docSlot.is_compressed = true;
+        if (!docSlot.prepared_size && docSlot.original_size) {
+          docSlot.prepared_size = Math.round(docSlot.original_size * 0.15);
+          docSlot.compression_ratio = 85.0;
+        }
+
+        return NextResponse.json({
+          document_id: docSlot.document_id || docId,
+          status: "SUCCESS",
+          original_size: docSlot.original_size || 385000,
+          prepared_size: docSlot.prepared_size || 38500,
+          original_dimensions: docSlot.original_dimensions || "600×690 px",
+          prepared_dimensions: docSlot.prepared_dimensions || "200×230 px",
+          quality: 85,
+          is_valid: true,
+          is_compressed: true,
+          compression_ratio: docSlot.compression_ratio || 85.0,
+          compression_status: "compressed",
+          acknowledged: docSlot.acknowledged || false
+        });
+      }
+
+      // Acknowledge Compression
+      if (slugPath.endsWith("/acknowledge-compression")) {
+        const parts = slugPath.split("/");
+        const docId = parts[1];
+        const docSlot = documentsStore.find((d) => d.document_id === docId || d.id === docId);
+        if (docSlot) docSlot.acknowledged = true;
+
+        return NextResponse.json({
+          document_id: docId,
+          acknowledged: true,
+          message: "Compression & resizing acknowledged."
+        });
+      }
+
+      // Delete/Remove Document
+      if (method === "DELETE" || slugPath.includes("delete")) {
+        const parts = slugPath.split("/");
+        const docId = parts[1] || parts[0];
+        const docSlot = documentsStore.find((d) => d.document_id === docId || d.id === docId);
+        if (docSlot) {
+          docSlot.status = "missing";
+          docSlot.document_id = null;
+          docSlot.original_filename = null;
+          docSlot.file_name = null;
+          docSlot.original_size = null;
+          docSlot.prepared_size = null;
+          docSlot.original_dimensions = null;
+          docSlot.prepared_dimensions = null;
+          docSlot.file_url = null;
+          docSlot.checks = [];
+          docSlot.photo_compliance = null;
+          docSlot.is_compressed = false;
+          docSlot.compression_ratio = 0;
+          docSlot.acknowledged = false;
+        }
+        return NextResponse.json({
+          document_id: docId,
+          status: "removed",
+          message: "Document successfully removed."
+        });
+      }
+
+      return NextResponse.json(documentsStore);
     }
+
     if (slugPath.startsWith("conflicts/")) {
       return NextResponse.json({ id: "conflict-1", status: "resolved", resolved_value: "" });
     }
@@ -111,8 +321,8 @@ function handleRequest(req: NextRequest): NextResponse {
     }
 
     return NextResponse.json(APPLICATION);
-  } catch {
-    return NextResponse.json(APPLICATION);
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || "Internal server error" }, { status: 500 });
   }
 }
 
@@ -131,3 +341,4 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   return handleRequest(request);
 }
+

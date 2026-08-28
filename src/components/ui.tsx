@@ -384,10 +384,12 @@ export function DocumentCard({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      onUpload(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      onUpload(selectedFile);
       setPhotoResult(null);
       setSigResult(null);
       setAcknowledged(false);
+      e.target.value = "";
     }
   };
 
