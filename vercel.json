@@ -1,10 +1,4 @@
 {
-  "functions": {
-    "api/*.py": {
-      "memory": 1024,
-      "maxDuration": 15
-    }
-  },
   "rewrites": [
     {
       "source": "/api/backend/:path*",
