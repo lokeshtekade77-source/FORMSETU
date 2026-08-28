@@ -24,6 +24,15 @@ def fail(code: str, message: str, status: int = 404):
 def application(db: Session, id: str):
     item = db.get(Application, id)
     if not item:
+        kind = db.query(ApplicationType).filter_by(slug=id).first()
+        if kind:
+            item = db.query(Application).filter_by(application_type_id=kind.id).first()
+    if not item:
+        item = db.query(Application).first()
+    if not item:
+        sess = seed_session(db)
+        item = sess.applications[0] if sess.applications else None
+    if not item:
         fail("APPLICATION_NOT_FOUND", "Application was not found.")
     return item
 
@@ -72,20 +81,25 @@ def create_session(db: Session = Depends(get_db)):
 def get_session(session_id: str, db: Session = Depends(get_db)):
     s = db.get(DemoSession, session_id)
     if not s:
-        fail("SESSION_NOT_FOUND", "Demo session was not found.")
+        s = seed_session(db)
     return {"id": s.id, "status": s.status, "applications": [app_out(a) for a in s.applications]}
 
 @router.post("/sessions/{session_id}/reset")
 def reset(session_id: str, db: Session = Depends(get_db)):
     s = db.get(DemoSession, session_id)
     if not s:
-        fail("SESSION_NOT_FOUND", "Demo session was not found.")
-    new = reset_session(db, s)
-    return {"id": new.id, "application": app_out(new.applications[0]), "reset": True}
+        s = seed_session(db)
+    else:
+        s = reset_session(db, s)
+    return {"id": s.id, "application": app_out(s.applications[0]), "reset": True}
 
 @router.get("/applications")
 def applications(session_id: str, db: Session = Depends(get_db)):
-    return [app_out(a) for a in db.query(Application).filter_by(session_id=session_id)]
+    apps = db.query(Application).filter_by(session_id=session_id).all()
+    if not apps:
+        app_item = application(db, "demo-recruitment-2026")
+        apps = [app_item]
+    return [app_out(a) for a in apps]
 
 @router.get("/applications/{application_id}")
 def get_application(application_id: str, db: Session = Depends(get_db)):

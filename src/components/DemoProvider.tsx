@@ -121,6 +121,48 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         setSelectedPreviousId(importsData[0].previous_application_id || importsData[0].id);
       }
     } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        try {
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("formsetu_active_app_id");
+            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+          }
+          const newSess = await api.createSession();
+          if (newSess.id && newSess.application?.id) {
+            setSessionId(newSess.id);
+            setApplicationId(newSess.application.id);
+            const [appData, reqsData, fieldsData, prevAppsData, importsData, conflictsData, docsData, valData, progressData] =
+              await Promise.all([
+                api.getApplication(newSess.application.id),
+                api.getRequirements(newSess.application.id),
+                api.getFields(newSess.application.id),
+                api.getPreviousApplications(newSess.id),
+                api.getImports(newSess.application.id),
+                api.getConflicts(newSess.application.id),
+                api.getApplicationDocuments(newSess.application.id),
+                api.getApplicationValidation(newSess.application.id),
+                api.getProgress(newSess.application.id).catch(() => null)
+              ]);
+            setApplication(appData);
+            setRequirements(reqsData);
+            setFields(fieldsData);
+            setPreviousApps(prevAppsData);
+            setImports(importsData);
+            setConflicts(conflictsData);
+            setDocuments(docsData);
+            setValidation(valData);
+            setProgress(progressData);
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem("formsetu_active_app_id", newSess.application.id);
+              sessionStorage.setItem(SESSION_STORAGE_KEY, newSess.id);
+            }
+            return;
+          }
+        } catch {
+          setError("Failed to initialize demo session. Please try again.");
+          return;
+        }
+      }
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
