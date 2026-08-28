@@ -40,12 +40,12 @@ const SECTIONS = [
 ];
 
 const DOCUMENTS = [
-  { id: "doc-1", application_id: "demo-app-123", document_requirement_id: "req-photo", document_type: "photo", label: "Photograph", status: "missing", file_name: null, file_path: null, file_size_kb: null, mime_type: null, width: null, height: null, validation_status: "pending", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: null },
-  { id: "doc-2", application_id: "demo-app-123", document_requirement_id: "req-sig", document_type: "signature", label: "Signature", status: "valid", file_name: "demo_signature.jpg", file_path: "/demo_signature.jpg", file_size_kb: 15, mime_type: "image/jpeg", width: 140, height: 60, validation_status: "valid", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: "2026-08-28T00:00:00Z" }
+  { id: "doc-1", application_id: "demo-recruitment-2026", document_requirement_id: "req-photo", document_type: "photo", label: "Photograph", status: "missing", file_name: null, file_path: null, file_size_kb: null, mime_type: null, width: null, height: null, validation_status: "pending", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: null },
+  { id: "doc-2", application_id: "demo-recruitment-2026", document_requirement_id: "req-sig", document_type: "signature", label: "Signature", status: "valid", file_name: "demo_signature.jpg", file_path: "/demo_signature.jpg", file_size_kb: 15, mime_type: "image/jpeg", width: 140, height: 60, validation_status: "valid", preparation_status: "not_required", error_message: null, metadata_json: {}, uploaded_at: "2026-08-28T00:00:00Z" }
 ];
 
 const APPLICATION = {
-  id: "demo-app-123",
+  id: "demo-recruitment-2026",
   session_id: "demo-session-123",
   application_type_id: "demo-recruitment-2026",
   application_mode: "DEMO",
@@ -62,9 +62,9 @@ const SESSION = {
   disclaimer: "Independent prototype. Synthetic data only."
 };
 
-async function handle(req: NextRequest) {
+function handleRequest(req: NextRequest): NextResponse {
   try {
-    const pathname = new URL(req.url).pathname;
+    const pathname = req.nextUrl ? req.nextUrl.pathname : "/api";
     const slugPath = pathname.replace(/^\/api\/?/, "");
 
     if (slugPath === "sessions" || slugPath.startsWith("sessions/")) {
@@ -73,7 +73,7 @@ async function handle(req: NextRequest) {
     if (slugPath === "applications") {
       return NextResponse.json([APPLICATION]);
     }
-    if (slugPath.startsWith("applications/")) {
+    if (slugPath.startsWith("applications")) {
       if (slugPath.endsWith("/requirements")) return NextResponse.json(REQUIREMENTS);
       if (slugPath.endsWith("/sections")) return NextResponse.json(SECTIONS);
       if (slugPath.endsWith("/fields")) return NextResponse.json(FIELDS);
@@ -81,11 +81,7 @@ async function handle(req: NextRequest) {
       if (slugPath.endsWith("/documents")) return NextResponse.json(DOCUMENTS);
       if (slugPath.endsWith("/validation")) return NextResponse.json({ valid: true, messages: [] });
       if (slugPath.endsWith("/imports")) return NextResponse.json([]);
-      if (slugPath.endsWith("/conflicts")) {
-        return NextResponse.json([
-          { id: "conflict-1", application_id: "demo-app-123", field_key: "district", previous_value: "Nagpur", current_value: "Bhandara", status: "unresolved" }
-        ]);
-      }
+      if (slugPath.endsWith("/conflicts")) return NextResponse.json([]);
       if (slugPath.endsWith("/smart-import") || slugPath.endsWith("/auto-fetch")) {
         return NextResponse.json({ status: "success", imported_count: 5, fields: FIELDS });
       }
@@ -116,13 +112,24 @@ async function handle(req: NextRequest) {
       return NextResponse.json({ status: "ok", service: "formsetu-api", demo_only: true });
     }
 
-    return NextResponse.json({ status: "ok", message: "FormSetu API Handler active" });
+    return NextResponse.json(APPLICATION);
   } catch {
-    return NextResponse.json({ status: "ok", service: "formsetu-api" });
+    return NextResponse.json(APPLICATION);
   }
 }
 
-export const GET = handle;
-export const POST = handle;
-export const PUT = handle;
-export const DELETE = handle;
+export async function GET(request: NextRequest) {
+  return handleRequest(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handleRequest(request);
+}
+
+export async function PUT(request: NextRequest) {
+  return handleRequest(request);
+}
+
+export async function DELETE(request: NextRequest) {
+  return handleRequest(request);
+}
