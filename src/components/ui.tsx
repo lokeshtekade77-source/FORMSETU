@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDemo } from "./DemoProvider";
 import { AppDocumentOut, PhotoComplianceOut, SignatureComplianceOut, api } from "@/lib/api";
-
+import { prepareImage } from "@/lib/filePreparationEngine";
 
 const base = "/applications/demo-recruitment-2026";
 const steps = [
@@ -382,14 +382,30 @@ export function DocumentCard({
     }
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
-      onUpload(selectedFile);
+      e.target.value = "";
+
+      let uploadFile = selectedFile;
+      if (isImageDoc) {
+        try {
+          const prep = await prepareImage(selectedFile, {
+            max_size_kb: docSlot.max_size_kb || 50,
+            required_width: docSlot.required_width || (isPhoto ? 200 : 140),
+            required_height: docSlot.required_height || (isPhoto ? 230 : 60),
+            allowed_formats: allowedFormats
+          });
+          uploadFile = prep.file;
+        } catch {
+          // fallback to original file if client canvas processing fails
+        }
+      }
+
+      onUpload(uploadFile);
       setPhotoResult(null);
       setSigResult(null);
       setAcknowledged(false);
-      e.target.value = "";
     }
   };
 

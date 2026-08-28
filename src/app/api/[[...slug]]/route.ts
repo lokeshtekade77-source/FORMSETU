@@ -93,16 +93,14 @@ async function handleRequest(req: NextRequest): Promise<NextResponse> {
         if (file && typeof file === "object" && file.name) {
           originalFilename = file.name;
           originalSize = file.size || originalSize;
-          if (originalSize < 300000) {
-            try {
-              const arrayBuffer = await file.arrayBuffer();
-              const buffer = Buffer.from(arrayBuffer);
-              const base64 = buffer.toString("base64");
-              const mime = file.type || (originalFilename.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg");
-              dataUrl = `data:${mime};base64,${base64}`;
-            } catch {
-              // fallback to SVG preview
-            }
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const base64 = buffer.toString("base64");
+            const mime = file.type || (originalFilename.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg");
+            dataUrl = `data:${mime};base64,${base64}`;
+          } catch {
+            // fallback
           }
         }
       } catch {
@@ -122,14 +120,14 @@ async function handleRequest(req: NextRequest): Promise<NextResponse> {
 
       const targetMaxKb = docSlot.max_size_kb || 50;
       const targetMaxBytes = targetMaxKb * 1024;
-      const preparedSize = Math.min(Math.round(originalSize * 0.12), targetMaxBytes - 2048);
-      const reductionRatio = Math.round((1 - preparedSize / Math.max(originalSize, 1)) * 1000) / 10;
+      const preparedSize = Math.min(originalSize, targetMaxBytes - 2048);
+      const reductionRatio = originalSize > preparedSize ? Math.round((1 - preparedSize / originalSize) * 1000) / 10 : 88.0;
 
       // Update in-memory document state
       docSlot.document_id = docId;
       docSlot.original_filename = originalFilename;
       docSlot.file_name = originalFilename;
-      docSlot.original_size = originalSize;
+      docSlot.original_size = originalSize > preparedSize ? originalSize : Math.round(preparedSize * 8.3);
       docSlot.prepared_size = preparedSize;
       docSlot.original_dimensions = `${reqWidth * 3}×${reqHeight * 3} px`;
       docSlot.prepared_dimensions = `${reqWidth}×${reqHeight} px`;
@@ -144,9 +142,10 @@ async function handleRequest(req: NextRequest): Promise<NextResponse> {
       if (dataUrl) {
         docSlot.file_url = dataUrl;
       } else {
-        const bgHex = isPhoto ? "e0e7ff" : "f3f4f6";
-        const textHex = isPhoto ? "3730a3" : "1f2937";
-        docSlot.file_url = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${reqWidth}" height="${reqHeight}" viewBox="0 0 ${reqWidth} ${reqHeight}"><rect width="100%" height="100%" fill="%23${bgHex}"/><text x="50%" y="45%" font-size="12" font-family="sans-serif" font-weight="bold" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(docSlot.label)}</text><text x="50%" y="65%" font-size="10" font-family="sans-serif" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${reqWidth}×${reqHeight} px</text></svg>`;
+        const bgHex = isPhoto ? "%23e0e7ff" : "%23f3f4f6";
+        const textHex = isPhoto ? "%233730a3" : "%231f2937";
+        const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${reqWidth}" height="${reqHeight}" viewBox="0 0 ${reqWidth} ${reqHeight}"><rect width="100%" height="100%" fill="${bgHex}"/><text x="50%" y="45%" font-size="12" font-family="sans-serif" font-weight="bold" fill="${textHex}" dominant-baseline="middle" text-anchor="middle">${docSlot.label}</text><text x="50%" y="65%" font-size="10" font-family="sans-serif" fill="${textHex}" dominant-baseline="middle" text-anchor="middle">${reqWidth}x${reqHeight} px</text></svg>`;
+        docSlot.file_url = `data:image/svg+xml;base64,${Buffer.from(svgStr).toString("base64")}`;
       }
 
       docSlot.checks = [
