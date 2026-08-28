@@ -668,14 +668,18 @@ export function PersonalPage() {
       const cleanKey = f.key.toLowerCase().trim();
       let matchedVal: string | undefined = undefined;
 
-      for (const [vKey, vVal] of Object.entries(vaultMap)) {
-        if (cleanKey.includes(vKey) || vKey.includes(cleanKey)) {
-          matchedVal = vVal;
-          break;
+      if (vaultMap[cleanKey] && vaultMap[cleanKey].trim() !== "") {
+        matchedVal = vaultMap[cleanKey];
+      } else {
+        for (const [vKey, vVal] of Object.entries(vaultMap)) {
+          if (vVal && vVal.trim() !== "" && (cleanKey.includes(vKey) || vKey.includes(cleanKey))) {
+            matchedVal = vVal;
+            break;
+          }
         }
       }
 
-      if (matchedVal && matchedVal !== f.value) {
+      if (matchedVal !== undefined && matchedVal !== f.value) {
         await updateField(f.id, matchedVal);
         count++;
       }
@@ -688,13 +692,18 @@ export function PersonalPage() {
     }
   }, [fields, updateField]);
 
-  // Auto-sync on mount if vault records exist
+  // Auto-sync on mount and listen for vault update events
   useEffect(() => {
     const vaultMap = getVaultValueMap();
     if (Object.keys(vaultMap).length > 0) {
       handleSyncVault();
     }
-  }, []);
+    const onVaultUpdate = () => {
+      handleSyncVault();
+    };
+    window.addEventListener("formsetu_vault_updated", onVaultUpdate);
+    return () => window.removeEventListener("formsetu_vault_updated", onVaultUpdate);
+  }, [handleSyncVault]);
 
   const handleAutoFetch = async () => {
     await autoFetch();
