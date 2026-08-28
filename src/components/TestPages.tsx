@@ -384,7 +384,7 @@ export function TestRequirementsReviewPage() {
                   <div key={d.document_type} className="flex items-center gap-2 text-xs">
                     <span className="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
                     <span>{d.label}</span>
-                    <span className="text-[10px] text-on-surface-variant">({d.allowed_formats.join(", ").toUpperCase()}, max {d.max_size_kb} KB)</span>
+                    <span className="text-[10px] text-on-surface-variant">({(d.allowed_formats || []).join(", ").toUpperCase()}, max {d.max_size_kb} KB)</span>
                   </div>
                 ))}
               </div>

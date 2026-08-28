@@ -248,7 +248,7 @@ export function RequirementsPage() {
                 key={req.id}
                 icon="upload_file"
                 title={req.label}
-                detail={`${req.allowed_formats.join("/").toUpperCase()} · Max ${req.max_size_kb} KB${
+                detail={`${(req.allowed_formats || []).join("/").toUpperCase()} · Max ${req.max_size_kb} KB${
                   req.required_width ? ` · ${req.required_width}×${req.required_height}px` : ""
                 }`}
                 optional={!req.required}
@@ -882,6 +882,9 @@ export function DocumentsPage() {
   const { documents, requirements, uploadDocument, prepareDocument } = useDemo();
   const router = useRouter();
 
+  const safeDocs = Array.isArray(documents) ? documents : [];
+  const safeReqs = Array.isArray(requirements) ? requirements : [];
+
   return (
     <ApplicationShell>
       <SectionHeader
@@ -891,18 +894,18 @@ export function DocumentsPage() {
       <div className="mb-6 rounded-xl bg-surface-container p-5 flex items-center justify-between">
         <div>
           <span className="text-3xl font-bold text-primary">
-            {documents.filter((d) => d.status === "valid" || d.validation_status === "valid" || d.preparation_status === "prepared").length}
+            {safeDocs.filter((d) => d.status === "valid" || d.validation_status === "valid" || d.preparation_status === "prepared").length}
           </span>
-          <span className="ml-2 text-on-surface-variant">/ {documents.length || requirements.length} ready</span>
+          <span className="ml-2 text-on-surface-variant">/ {safeDocs.length || safeReqs.length} ready</span>
         </div>
         <div className="text-xs text-on-surface-variant text-right">
           Deterministic local processing · Pillow &amp; PyMuPDF engine
         </div>
       </div>
       <div className="grid gap-5 xl:grid-cols-2">
-        {documents.map((doc) => (
+        {safeDocs.map((doc, idx) => (
           <DocumentCard
-            key={doc.id}
+            key={doc.id || doc.document_requirement_id || `doc-${idx}`}
             docSlot={doc}
             onUpload={(file) => uploadDocument(doc.document_requirement_id, file)}
             onPrepare={(docId) => prepareDocument(docId)}

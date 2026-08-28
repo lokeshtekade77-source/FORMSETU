@@ -214,7 +214,7 @@ export function ApplicationSidebar() {
           const isCompleted =
             stepStat === "COMPLETED" ||
             path === "requirements" ||
-            (path === "documents" && documents.length > 0 && documents.every((d) => !d.required || d.status === "valid" || d.validation_status === "valid")) ||
+            (path === "documents" && Array.isArray(documents) && documents.length > 0 && documents.every((d) => !d.required || d.status === "valid" || d.validation_status === "valid")) ||
             (path === "declaration" && declarationAccepted);
 
           const isReview = stepStat === "NEEDS_REVIEW";
@@ -424,9 +424,11 @@ export function DocumentCard({
 
   const isPhoto = ["photo", "photograph", "passport_photo"].includes((docSlot.document_type || "").toLowerCase());
   const isSignature = ["signature", "applicant_signature"].includes((docSlot.document_type || "").toLowerCase());
-  const isImageDoc = isPhoto || isSignature || (docSlot.allowed_formats || []).some(f => ["jpg", "jpeg", "png", "webp"].includes(f.toLowerCase()));
+  const allowedFormats = Array.isArray(docSlot.allowed_formats) ? docSlot.allowed_formats : [];
+  const isImageDoc = isPhoto || isSignature || allowedFormats.some(f => ["jpg", "jpeg", "png", "webp"].includes((f || "").toLowerCase()));
 
-  const specText = `${docSlot.allowed_formats.join("/").toUpperCase()} · Max ${docSlot.max_size_kb} KB${
+  const formatsText = allowedFormats.length > 0 ? allowedFormats.join("/").toUpperCase() : "ANY";
+  const specText = `${formatsText} · Max ${docSlot.max_size_kb || 500} KB${
     docSlot.required_width ? ` · ${docSlot.required_width}×${docSlot.required_height}px` : ""
   }`;
 
@@ -579,9 +581,9 @@ export function DocumentCard({
               </div>
             )}
 
-            {photoResult && photoResult.checks.length > 0 && (
+            {photoResult && photoResult.checks && photoResult.checks.length > 0 && (
               <div className="space-y-1.5 text-xs">
-                {photoResult.checks.map((chk, i) => (
+                {(photoResult.checks || []).map((chk, i) => (
                   <div key={i} className="flex items-start gap-2">
                     {statusCheckIcon(chk.status)}
                     <span className={chk.status === "FAIL" ? "text-error" : chk.status === "WARNING" ? "text-amber-700" : "text-on-surface"}>
@@ -663,7 +665,7 @@ export function DocumentCard({
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          accept={docSlot.allowed_formats.map((f) => `.${f}`).join(",")}
+          accept={allowedFormats.map((f) => `.${f}`).join(",")}
           className="hidden"
         />
 
