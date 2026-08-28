@@ -460,7 +460,11 @@ export function DocumentCard({
   const isCompressed = docSlot.is_compressed || Boolean(docSlot.prepared_size && docSlot.original_size && docSlot.prepared_size < docSlot.original_size) || docSlot.preparation_status === "prepared";
   const compressionRatio = docSlot.compression_ratio || (docSlot.original_size && docSlot.prepared_size ? Math.round((1 - docSlot.prepared_size / docSlot.original_size) * 1000) / 10 : 0);
 
-  const cacheBustUrl = docSlot.file_url ? `${docSlot.file_url}?v=${docSlot.prepared_size || docSlot.original_size || Date.now()}` : "";
+  const cacheBustUrl = docSlot.file_url
+    ? docSlot.file_url.startsWith("data:")
+      ? docSlot.file_url
+      : `${docSlot.file_url}?v=${docSlot.prepared_size || docSlot.original_size || Date.now()}`
+    : "";
 
   return (
     <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5 flex flex-col justify-between">

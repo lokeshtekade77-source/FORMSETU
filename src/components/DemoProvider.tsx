@@ -398,14 +398,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setSaving(true);
     setError(null);
     try {
-      const res = await api.uploadDocument(applicationId, requirementId, file);
-      if (res && res.document_id) {
-        try {
-          await api.prepareDocument(res.document_id);
-        } catch {
-          // silently fallback if already prepared
-        }
-      }
+      await api.uploadDocument(applicationId, requirementId, file);
       await refresh();
     } catch (err) {
       if (err instanceof ApiError) setError(err.message);

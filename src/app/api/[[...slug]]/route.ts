@@ -93,14 +93,16 @@ async function handleRequest(req: NextRequest): Promise<NextResponse> {
         if (file && typeof file === "object" && file.name) {
           originalFilename = file.name;
           originalSize = file.size || originalSize;
-          try {
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-            const base64 = buffer.toString("base64");
-            const mime = file.type || (originalFilename.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg");
-            dataUrl = `data:${mime};base64,${base64}`;
-          } catch {
-            // fallback
+          if (originalSize < 300000) {
+            try {
+              const arrayBuffer = await file.arrayBuffer();
+              const buffer = Buffer.from(arrayBuffer);
+              const base64 = buffer.toString("base64");
+              const mime = file.type || (originalFilename.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg");
+              dataUrl = `data:${mime};base64,${base64}`;
+            } catch {
+              // fallback to SVG preview
+            }
           }
         }
       } catch {
@@ -141,11 +143,10 @@ async function handleRequest(req: NextRequest): Promise<NextResponse> {
 
       if (dataUrl) {
         docSlot.file_url = dataUrl;
-      } else if (!docSlot.file_url) {
-        // SVG fallback thumbnail
+      } else {
         const bgHex = isPhoto ? "e0e7ff" : "f3f4f6";
         const textHex = isPhoto ? "3730a3" : "1f2937";
-        docSlot.file_url = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${reqWidth}" height="${reqHeight}" viewBox="0 0 ${reqWidth} ${reqHeight}"><rect width="100%" height="100%" fill="%23${bgHex}"/><text x="50%" y="50%" font-size="12" font-family="sans-serif" font-weight="bold" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(docSlot.label)}</text></svg>`;
+        docSlot.file_url = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${reqWidth}" height="${reqHeight}" viewBox="0 0 ${reqWidth} ${reqHeight}"><rect width="100%" height="100%" fill="%23${bgHex}"/><text x="50%" y="45%" font-size="12" font-family="sans-serif" font-weight="bold" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(docSlot.label)}</text><text x="50%" y="65%" font-size="10" font-family="sans-serif" fill="%23${textHex}" dominant-baseline="middle" text-anchor="middle">${reqWidth}×${reqHeight} px</text></svg>`;
       }
 
       docSlot.checks = [
