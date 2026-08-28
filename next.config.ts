@@ -3,17 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async rewrites() {
+    // On Vercel, vercel.json handles routing /api/* directly to the Python serverless function (api/index.py).
+    // In local development, Next.js proxies /api/* to local uvicorn server (http://127.0.0.1:8000).
     if (process.env.VERCEL) {
-      return [
-        {
-          source: "/api/backend/:path*",
-          destination: "/api/index.py"
-        },
-        {
-          source: "/api/:path*",
-          destination: "/api/index.py"
-        }
-      ];
+      return [];
     }
     return [
       {
