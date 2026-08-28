@@ -62,60 +62,64 @@ const SESSION = {
   disclaimer: "Independent prototype. Synthetic data only."
 };
 
-async function handle(req: NextRequest, context: { params: Promise<{ slug?: string[] }> }) {
-  const params = await context.params;
-  const slugPath = params.slug ? params.slug.join("/") : "";
+async function handle(req: NextRequest) {
+  try {
+    const pathname = new URL(req.url).pathname;
+    const slugPath = pathname.replace(/^\/api\/?/, "");
 
-  if (slugPath === "sessions" || slugPath.startsWith("sessions/")) {
-    return NextResponse.json(SESSION);
-  }
-  if (slugPath === "applications") {
-    return NextResponse.json([APPLICATION]);
-  }
-  if (slugPath.startsWith("applications/")) {
-    if (slugPath.endsWith("/requirements")) return NextResponse.json(REQUIREMENTS);
-    if (slugPath.endsWith("/sections")) return NextResponse.json(SECTIONS);
-    if (slugPath.endsWith("/fields")) return NextResponse.json(FIELDS);
-    if (slugPath.endsWith("/progress")) return NextResponse.json({ progress: 15, completed_fields: 3, total_fields: 18, missing_documents: [] });
-    if (slugPath.endsWith("/documents")) return NextResponse.json(DOCUMENTS);
-    if (slugPath.endsWith("/validation")) return NextResponse.json({ valid: true, messages: [] });
-    if (slugPath.endsWith("/imports")) return NextResponse.json([]);
-    if (slugPath.endsWith("/conflicts")) {
+    if (slugPath === "sessions" || slugPath.startsWith("sessions/")) {
+      return NextResponse.json(SESSION);
+    }
+    if (slugPath === "applications") {
+      return NextResponse.json([APPLICATION]);
+    }
+    if (slugPath.startsWith("applications/")) {
+      if (slugPath.endsWith("/requirements")) return NextResponse.json(REQUIREMENTS);
+      if (slugPath.endsWith("/sections")) return NextResponse.json(SECTIONS);
+      if (slugPath.endsWith("/fields")) return NextResponse.json(FIELDS);
+      if (slugPath.endsWith("/progress")) return NextResponse.json({ progress: 15, completed_fields: 3, total_fields: 18, missing_documents: [] });
+      if (slugPath.endsWith("/documents")) return NextResponse.json(DOCUMENTS);
+      if (slugPath.endsWith("/validation")) return NextResponse.json({ valid: true, messages: [] });
+      if (slugPath.endsWith("/imports")) return NextResponse.json([]);
+      if (slugPath.endsWith("/conflicts")) {
+        return NextResponse.json([
+          { id: "conflict-1", application_id: "demo-app-123", field_key: "district", previous_value: "Nagpur", current_value: "Bhandara", status: "unresolved" }
+        ]);
+      }
+      if (slugPath.endsWith("/smart-import") || slugPath.endsWith("/auto-fetch")) {
+        return NextResponse.json({ status: "success", imported_count: 5, fields: FIELDS });
+      }
+      if (slugPath.endsWith("/clear-fields")) return NextResponse.json({ status: "cleared", field_count: 0 });
+      if (slugPath.endsWith("/declaration")) return NextResponse.json({ accepted: true });
+      if (slugPath.endsWith("/complete-demo")) {
+        return NextResponse.json({ status: "completed", message: "Demo completed successfully!", external_submission: false });
+      }
+      return NextResponse.json(APPLICATION);
+    }
+    if (slugPath.startsWith("previous-applications")) {
       return NextResponse.json([
-        { id: "conflict-1", application_id: "demo-app-123", field_key: "district", previous_value: "Nagpur", current_value: "Bhandara", status: "unresolved" }
+        { id: "prev-1", session_id: "demo-session-123", title: "Recruitment Application — Demo 2025", application_year: 2025, status: "completed" }
       ]);
     }
-    if (slugPath.endsWith("/smart-import") || slugPath.endsWith("/auto-fetch")) {
-      return NextResponse.json({ status: "success", imported_count: 5, fields: FIELDS });
+    if (slugPath === "documents" || slugPath.startsWith("documents/")) {
+      if (slugPath.endsWith("/photo-analysis")) return NextResponse.json({ pass: true, score: 98, checks: [] });
+      if (slugPath.endsWith("/signature-analysis")) return NextResponse.json({ pass: true, score: 95, checks: [] });
+      return NextResponse.json(DOCUMENTS);
     }
-    if (slugPath.endsWith("/clear-fields")) return NextResponse.json({ status: "cleared", field_count: 0 });
-    if (slugPath.endsWith("/declaration")) return NextResponse.json({ accepted: true });
-    if (slugPath.endsWith("/complete-demo")) {
-      return NextResponse.json({ status: "completed", message: "Demo completed successfully!", external_submission: false });
+    if (slugPath.startsWith("conflicts/")) {
+      return NextResponse.json({ id: "conflict-1", status: "resolved", resolved_value: "Nagpur" });
     }
-    return NextResponse.json(APPLICATION);
-  }
-  if (slugPath.startsWith("previous-applications")) {
-    return NextResponse.json([
-      { id: "prev-1", session_id: "demo-session-123", title: "Recruitment Application — Demo 2025", application_year: 2025, status: "completed" }
-    ]);
-  }
-  if (slugPath === "documents" || slugPath.startsWith("documents/")) {
-    if (slugPath.endsWith("/photo-analysis")) return NextResponse.json({ pass: true, score: 98, checks: [] });
-    if (slugPath.endsWith("/signature-analysis")) return NextResponse.json({ pass: true, score: 95, checks: [] });
-    return NextResponse.json(DOCUMENTS);
-  }
-  if (slugPath.startsWith("conflicts/")) {
-    return NextResponse.json({ id: "conflict-1", status: "resolved", resolved_value: "Nagpur" });
-  }
-  if (slugPath.startsWith("imports/")) {
-    return NextResponse.json({ id: "imp-1", decision: "use", value: "Sample Value" });
-  }
-  if (slugPath === "health" || slugPath === "") {
-    return NextResponse.json({ status: "ok", service: "formsetu-api", demo_only: true });
-  }
+    if (slugPath.startsWith("imports/")) {
+      return NextResponse.json({ id: "imp-1", decision: "use", value: "Sample Value" });
+    }
+    if (slugPath === "health" || slugPath === "") {
+      return NextResponse.json({ status: "ok", service: "formsetu-api", demo_only: true });
+    }
 
-  return NextResponse.json({ status: "ok", message: "FormSetu API Handler active" });
+    return NextResponse.json({ status: "ok", message: "FormSetu API Handler active" });
+  } catch {
+    return NextResponse.json({ status: "ok", service: "formsetu-api" });
+  }
 }
 
 export const GET = handle;
