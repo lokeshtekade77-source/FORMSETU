@@ -1,0 +1,514 @@
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface": "#f7f9fb",
+                "on-tertiary-fixed": "#331200",
+                "on-secondary": "#ffffff",
+                "surface-variant": "#e0e3e5",
+                "surface-container-highest": "#e0e3e5",
+                "surface-container": "#eceef0",
+                "on-secondary-fixed": "#00210a",
+                "on-surface": "#191c1e",
+                "primary-container": "#1e40af",
+                "on-primary-fixed": "#001453",
+                "tertiary-container": "#7d3600",
+                "secondary-container": "#92f5a4",
+                "error-container": "#ffdad6",
+                "primary": "#00288e",
+                "tertiary-fixed-dim": "#ffb68e",
+                "on-tertiary-fixed-variant": "#763300",
+                "primary-fixed-dim": "#b8c4ff",
+                "on-secondary-fixed-variant": "#005323",
+                "on-primary": "#ffffff",
+                "surface-dim": "#d8dadc",
+                "on-primary-container": "#a8b8ff",
+                "surface-container-high": "#e6e8ea",
+                "secondary-fixed-dim": "#79db8d",
+                "inverse-on-surface": "#eff1f3",
+                "inverse-surface": "#2d3133",
+                "surface-tint": "#3755c3",
+                "on-background": "#191c1e",
+                "on-tertiary": "#ffffff",
+                "on-error-container": "#93000a",
+                "on-secondary-container": "#007233",
+                "background": "#f7f9fb",
+                "surface-container-low": "#f2f4f6",
+                "on-tertiary-container": "#ffa673",
+                "outline": "#757684",
+                "outline-variant": "#c4c5d5",
+                "tertiary": "#5a2500",
+                "error": "#ba1a1a",
+                "on-surface-variant": "#444653",
+                "surface-bright": "#f7f9fb",
+                "primary-fixed": "#dde1ff",
+                "secondary": "#006d30",
+                "on-primary-fixed-variant": "#173bab",
+                "on-error": "#ffffff",
+                "inverse-primary": "#b8c4ff",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#ffdbca",
+                "secondary-fixed": "#95f8a7"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "stack-sm": "8px",
+                "stack-lg": "32px",
+                "margin-desktop": "40px",
+                "gutter": "24px",
+                "stack-md": "16px",
+                "margin-mobile": "16px",
+                "container-max": "1200px",
+                "unit": "4px",
+                "stack-gap": "16px",
+                "inline-gap": "12px",
+                "section-margin": "32px",
+                "container-padding": "24px"
+        },
+        "fontFamily": {
+                "headline-lg": [
+                        "Inter"
+                ],
+                "display-lg": [
+                        "Inter"
+                ],
+                "body-sm": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-sm": [
+                        "Inter"
+                ],
+                "caption": [
+                        "Inter"
+                ],
+                "headline-sm": [
+                        "Inter"
+                ],
+                "display": [
+                        "Inter"
+                ],
+                "label-bold": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "caption": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-sm": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display": [
+                        "30px",
+                        {
+                                "lineHeight": "38px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-bold": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-outline-variant"><div class="h-16 max-w-container-max mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-stack-sm"><img alt="FormSetu Logo" class="w-8 h-8 object-contain rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQmP0J3E6tE64V2aE18H5N1yH4wzL4a74v1Q1t866w7F5z238H99J6242B670x1C1F8y2E3J2A5r8g8H5wJ6665780y99G57M1g7M3J4A7R9E2c1g9t8X4F5"/><span class="text-headline-md font-headline-md text-primary tracking-tight">FormSetu</span><div class="h-5 w-px bg-outline-variant/40 mx-2"></div><div class="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-high rounded text-label-bold font-label-bold text-on-surface-variant"><img alt="NSEB Logo" class="w-4 h-4 object-contain rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2uU_l8Kj1VjU3Xk1_yA4D6oU8qT3R6vN8_Q9x6A1x1y6o5z7m1_u5A6_o2_Q8uA4s8s5Q2t7y8_H3_g1M9R8A2s3_m8_z2m4A8s3_u9y2A4o6A3s2Q6_Q5"/><span>NSEB Pilot</span></div></div><nav class="flex items-center gap-stack-lg"><div class="flex items-center gap-stack-sm text-label-md font-label-md text-on-surface-variant"><a class="hover:text-primary transition-colors" href="#">English</a><span class="opacity-20">|</span><a class="hover:text-primary transition-colors" href="#">मराठी</a><span class="opacity-20">|</span><a class="hover:text-primary transition-colors" href="#">हिन्दी</a></div><div class="w-8 h-8 rounded bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></nav></div></header><main class="w-full pt-16"><div class="flex flex-col w-full relative">
+<!-- Floating Background Elements -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+<div class="absolute -top-64 -right-64 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply"></div>
+<div class="absolute top-[40rem] -left-64 w-[600px] h-[600px] bg-secondary-container/20 rounded-full blur-3xl opacity-30 mix-blend-multiply"></div>
+</div>
+<!-- Hero Section -->
+<section class="relative pt-[120px] pb-stack-lg px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<!-- Hero Copy -->
+<div class="lg:col-span-6 flex flex-col gap-stack-lg z-10 relative">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface-container-high/50 text-primary-fixed-dim text-label-bold font-label-bold w-fit backdrop-blur-sm border-none">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span>Civic Accessibility Initiative Prototype</span>
+</div>
+<h1 class="text-display font-display text-on-surface tracking-tight max-w-2xl leading-[1.1]">
+          Government forms shouldn't make you <span class="text-primary relative inline-block whitespace-nowrap">type the same thing<svg class="absolute -bottom-2 left-0 w-full text-primary-fixed" preserveaspectratio="none" viewbox="0 0 100 12"><path d="M0,8 Q50,0 100,8 L100,12 Q50,4 0,12 Z" fill="currentColor"></path></svg></span> twice.
+        </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-xl">
+          FormSetu remembers your essential information, intelligently maps it to complex applications, and prepares your documents—so you can focus on the outcome, not the bureaucracy.
+        </p>
+<div class="flex flex-wrap items-center gap-stack-md pt-stack-sm">
+<a class="h-[48px] px-8 rounded bg-primary text-on-primary text-label-bold font-label-bold shadow-sm shadow-primary/20 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/30 transition-all active:scale-[0.98] flex items-center gap-2 group" href="#" onclick="window.location.href='start-application.html'">
+            Start an Application
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<button class="h-[48px] px-8 rounded bg-surface-container hover:bg-surface-container-high text-on-surface text-label-bold font-label-bold transition-colors active:scale-[0.98] flex items-center gap-2 border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+            See how it works
+          </button>
+</div>
+</div>
+<!-- Hero Visual (Dashboard Mockup) -->
+<div class="lg:col-span-6 relative mt-stack-lg lg:mt-0 perspective-1000">
+<!-- Main Dashboard Card -->
+<div class="relative bg-surface-container-lowest rounded-xl shadow-sm ring-1 ring-outline-variant/30 p-6 md:p-8 overflow-hidden transform rotate-y-[-5deg] rotate-x-[2deg] transition-transform duration-700 hover:rotate-y-0 hover:rotate-x-0 group">
+<!-- Decorative Top Bar -->
+<div class="flex items-center justify-between mb-8 pb-4 border-b border-surface-container">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">account_balance</span>
+</div>
+<div>
+<div class="text-label-bold font-label-bold text-on-surface">NSEB Recruitment Portal</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Draft Auto-Saved</div>
+</div>
+</div>
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-error-container"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary-container"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary-container"></div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="space-y-6">
+<!-- Progress Ring & Status -->
+<div class="flex items-center gap-6 bg-surface p-4 rounded-xl">
+<div class="relative w-16 h-16 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+<path class="text-primary transition-all duration-1000 ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" id="hero-progress" stroke="currentColor" stroke-dasharray="0, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center text-label-bold font-label-bold text-primary">84%</div>
+</div>
+<div class="flex-1">
+<h3 class="text-label-bold font-label-bold text-on-surface mb-1">Customer Support Associate</h3>
+<p class="text-caption font-caption text-on-surface-variant">Personal Details Section</p>
+</div>
+</div>
+<!-- AI Matching Simulation -->
+<div class="space-y-3 relative">
+<div class="text-label-bold font-label-bold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
+                Auto-fill Active
+              </div>
+<!-- Field 1 -->
+<div class="flex items-center justify-between bg-surface p-3 rounded border border-transparent hover:border-primary/20 transition-colors">
+<div class="text-body-sm font-body-sm text-on-surface">Full Name</div>
+<div class="flex items-center gap-3">
+<div class="text-body-sm font-body-sm text-on-surface font-medium truncate max-w-[150px]">Chaitanya Demo User</div>
+<div class="text-[11px] text-primary bg-primary/10 px-2 py-0.5 rounded font-medium">Imported</div>
+</div>
+</div>
+<!-- Field 2 -->
+<div class="flex items-center justify-between bg-surface p-3 rounded border border-transparent hover:border-primary/20 transition-colors">
+<div class="text-body-sm font-body-sm text-on-surface">Date of Birth</div>
+<div class="flex items-center gap-3">
+<div class="text-body-sm font-body-sm text-on-surface font-medium">15/08/1992</div>
+<div class="text-[11px] text-secondary bg-secondary/10 px-2 py-0.5 rounded font-medium text-on-secondary-container">Confirmed</div>
+</div>
+</div>
+<!-- Field 3 -->
+<div class="flex items-center justify-between bg-surface p-3 rounded border border-transparent hover:border-primary/20 transition-colors">
+<div class="text-body-sm font-body-sm text-on-surface">Photograph</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-3 mb-1">
+<div class="text-body-sm font-body-sm text-on-surface font-medium">profile_pic.jpg</div>
+<div class="text-[11px] text-secondary bg-secondary/10 px-2 py-0.5 rounded font-medium text-on-secondary-container">Ready</div>
+</div>
+<div class="text-[10px] text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">Optimized: 4.2MB → 47KB</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Overlay gradient for depth -->
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest/0 via-surface-container-lowest/0 to-surface-container-highest/20 pointer-events-none rounded-xl"></div>
+</div>
+<!-- Floating UI Element -->
+<div class="absolute -right-8 top-1/4 bg-surface-container-lowest rounded shadow-md ring-1 ring-outline-variant/20 p-4 transform translate-z-12 hover:-translate-y-1 transition-transform animate-[float_6s_ease-in-out_infinite]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="text-label-bold font-label-bold text-on-surface">42 Fields Auto-filled</div>
+<div class="text-caption font-caption text-on-surface-variant">Saved ~18 minutes</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Problem Section (Bento Grid) -->
+<section class="py-stack-lg px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto w-full mt-stack-lg relative">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<h2 class="text-display font-display text-on-surface mb-4">Why filling forms still feels harder than it should</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">The friction isn't just in the questions asked, it's in how the system demands you answer them.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[280px]">
+<!-- Card 1: Re-entering Info -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-xl shadow-sm ring-1 ring-outline-variant/30 p-8 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="z-10 relative">
+<div class="w-12 h-12 rounded bg-tertiary-container/10 text-tertiary flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[24px]">history</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">The Groundhog Day of Data</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant max-w-sm">Typing your full address, parent's names, and education history for the 50th time. The system forgets you the moment you close the tab.</p>
+</div>
+<!-- Visual Element -->
+<div class="absolute -bottom-8 -right-8 w-64 h-64 opacity-20 group-hover:opacity-40 transition-opacity flex flex-col gap-2 transform rotate-12">
+<div class="h-4 bg-outline-variant rounded w-full"></div>
+<div class="h-4 bg-outline-variant rounded w-3/4"></div>
+<div class="h-4 bg-outline-variant rounded w-5/6"></div>
+<div class="h-4 bg-outline-variant rounded w-full mt-4"></div>
+<div class="h-4 bg-outline-variant rounded w-3/4"></div>
+</div>
+</div>
+<!-- Card 2: File Size -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-xl shadow-sm ring-1 ring-outline-variant/30 p-8 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="z-10 relative">
+<div class="w-12 h-12 rounded bg-error-container/20 text-error flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[24px]">folder_off</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">File-Size Frustration</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">"Image must be under 50KB, exactly 300x300px, and in specific JPG format." A technical hurdle disguised as a simple upload step.</p>
+</div>
+<!-- Visual Element -->
+<div class="absolute right-4 bottom-4 bg-error/10 text-error px-3 py-2 rounded text-label-bold font-label-bold flex items-center gap-2 transform group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[16px]">error</span>
+          File exceeds 50KB
+        </div>
+</div>
+<!-- Card 3: Tiny Requirements -->
+<div class="md:col-span-12 bg-surface-container-lowest rounded-xl shadow-sm ring-1 ring-outline-variant/30 p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex-1 z-10 relative">
+<div class="w-12 h-12 rounded bg-primary-container/10 text-primary flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Tiny Requirements, Big Consequences</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant max-w-xl">Missed a middle initial? Used DD/MM/YYYY instead of MM/DD/YYYY? Minor formatting quirks lead to immediate rejection, sending you back to square one.</p>
+</div>
+<!-- Visual Element: Interactive validation representation -->
+<div class="flex-1 w-full flex justify-end">
+<div class="bg-surface p-4 rounded w-full max-w-sm space-y-3 ring-1 ring-outline-variant/20">
+<div class="flex justify-between items-center text-label-bold font-label-bold">
+<span class="text-on-surface-variant">Date of Birth (MM/DD/YYYY)</span>
+<span class="text-error text-[10px]">Invalid Format</span>
+</div>
+<div class="relative">
+<div class="w-full h-10 border border-error rounded bg-error/5 flex items-center px-3 text-on-surface font-mono text-sm">
+                24/10/1990
+              </div>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 text-error">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</div>
+</div>
+<div class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+              Required format is Month first.
+            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works (Horizontal Flow) -->
+<section class="py-stack-lg px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto w-full mt-stack-lg bg-surface-container rounded-xl mx-4 lg:mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-16 pt-8">
+<h2 class="text-display font-display text-on-surface mb-4">How FormSetu Works</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">A streamlined pipeline from your data to a completed application.</p>
+</div>
+<div class="relative pb-12 px-4">
+<!-- Connecting Line (Desktop) -->
+<div class="hidden md:block absolute top-12 left-16 right-16 h-0.5 bg-outline-variant/30"></div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center text-center group">
+<div class="w-24 h-24 rounded bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/20 flex items-center justify-center mb-6 relative group-hover:scale-105 transition-transform duration-300">
+<div class="absolute inset-2 rounded bg-primary/10 group-hover:bg-primary/20 transition-colors"></div>
+<span class="material-symbols-outlined text-[32px] text-primary relative z-10">memory</span>
+</div>
+<div class="text-label-bold font-label-bold text-primary mb-2 uppercase tracking-wider">Step 1</div>
+<h4 class="text-label-md font-label-bold text-on-surface mb-2">Remember</h4>
+<p class="text-caption font-caption text-on-surface-variant">Securely store your master profile. Enter your details once, use them everywhere.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center text-center group">
+<div class="w-24 h-24 rounded bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/20 flex items-center justify-center mb-6 relative group-hover:scale-105 transition-transform duration-300">
+<div class="absolute inset-2 rounded bg-secondary-container/20 group-hover:bg-secondary-container/40 transition-colors"></div>
+<span class="material-symbols-outlined text-[32px] text-secondary relative z-10">join_inner</span>
+</div>
+<div class="text-label-bold font-label-bold text-secondary mb-2 uppercase tracking-wider">Step 2</div>
+<h4 class="text-label-md font-label-bold text-on-surface mb-2">Match</h4>
+<p class="text-caption font-caption text-on-surface-variant">AI intelligently maps your master data to the specific terminology of any new form.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center text-center group">
+<div class="w-24 h-24 rounded bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/20 flex items-center justify-center mb-6 relative group-hover:scale-105 transition-transform duration-300">
+<div class="absolute inset-2 rounded bg-tertiary-container/10 group-hover:bg-tertiary-container/20 transition-colors"></div>
+<span class="material-symbols-outlined text-[32px] text-tertiary relative z-10">compress</span>
+</div>
+<div class="text-label-bold font-label-bold text-tertiary mb-2 uppercase tracking-wider">Step 3</div>
+<h4 class="text-label-md font-label-bold text-on-surface mb-2">Prepare</h4>
+<p class="text-caption font-caption text-on-surface-variant">Documents are automatically resized, reformatted, and compressed to meet exact specifications.</p>
+</div>
+<!-- Step 4 -->
+<div class="relative z-10 flex flex-col items-center text-center group">
+<div class="w-24 h-24 rounded bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/20 flex items-center justify-center mb-6 relative group-hover:scale-105 transition-transform duration-300">
+<div class="absolute inset-2 rounded bg-on-surface/5 group-hover:bg-on-surface/10 transition-colors"></div>
+<span class="material-symbols-outlined text-[32px] text-on-surface relative z-10">fact_check</span>
+</div>
+<div class="text-label-bold font-label-bold text-on-surface-variant mb-2 uppercase tracking-wider">Step 4</div>
+<h4 class="text-label-md font-label-bold text-on-surface mb-2">Review</h4>
+<p class="text-caption font-caption text-on-surface-variant">A final sanity check. Review the mapped application before official submission.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-stack-lg px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto w-full mt-stack-lg mb-stack-lg">
+<div class="bg-primary rounded-xl p-12 md:p-20 text-center relative overflow-hidden">
+<!-- Decorative rings -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded border border-on-primary/10"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded border border-on-primary/5"></div>
+</div>
+<div class="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-6">
+<h2 class="text-display font-display text-on-primary">Ready to simplify your next application?</h2>
+<p class="text-body-lg font-body-lg text-on-primary/80 mb-4">Join the pilot program and experience form-filling without the friction.</p>
+<button class="h-[48px] px-8 rounded bg-surface-container-lowest text-primary text-label-bold font-label-bold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-2" onclick="window.location.href='start-application.html'">
+          Start an Application
+        </button>
+</div>
+</div>
+</section>
+<!-- Disclaimer Footer Extension (Prepended to actual footer slot conceptually) -->
+<div class="w-full border-t border-outline-variant/20 pt-8 pb-4 text-center mt-auto">
+<p class="text-[11px] text-on-surface-variant max-w-container-max mx-auto px-margin-mobile">
+      FormSetu is an independent prototype developed under the Civic Accessibility Initiative. It is not affiliated with any official government portal. Data processing in this demo is simulated for illustrative purposes.
+    </p>
+</div>
+</div>
+<style>
+  @keyframes fillBar {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateZ(12px) translateY(0); }
+    50% { transform: translateZ(12px) translateY(-10px); }
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+</style>
+<script>
+  // Simple intersection observer to trigger the SVG progress animation
+  document.addEventListener("DOMContentLoaded", () => {
+    const progressPath = document.getElementById('hero-progress');
+    
+    if(progressPath) {
+       setTimeout(() => {
+          progressPath.style.strokeDasharray = '84, 100';
+       }, 500);
+    }
+  });
+</script></main><footer class="w-full bg-surface-container-low py-stack-lg mt-stack-lg border-t border-outline-variant"><div class="max-w-container-max mx-auto px-margin-mobile lg:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-md text-caption font-caption text-on-surface-variant"><span>© 2024 FormSetu. Civic Accessibility Initiative.</span><div class="flex gap-stack-md"><a>Privacy</a><a>Terms</a><a>Help Desk</a></div></div></footer></body></html>
