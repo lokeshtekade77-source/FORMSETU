@@ -1,15 +1,17 @@
 import type { NextConfig } from "next";
 
-const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true";
-
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async rewrites() {
-    if (isVercel) {
+    if (process.env.VERCEL) {
       return [
         {
           source: "/api/backend/:path*",
-          destination: "/api/:path*"
+          destination: "/api/index.py"
+        },
+        {
+          source: "/api/:path*",
+          destination: "/api/index.py"
         }
       ];
     }

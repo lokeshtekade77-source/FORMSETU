@@ -16,7 +16,7 @@ from app.services.signature_analyzer import SignatureComplianceAnalyzer
 from app.services.document_compliance import DocumentComplianceAnalyzer
 from app.services.form_analyzer import FormAnalysisService
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 def fail(code: str, message: str, status: int = 404):
     raise HTTPException(status_code=status, detail={"error": {"code": code, "message": message}})

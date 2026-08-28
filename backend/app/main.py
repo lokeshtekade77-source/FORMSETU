@@ -23,7 +23,8 @@ with engine.connect() as conn:
 app=FastAPI(title="FormSetu API",version="0.2.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"], allow_headers=["*"])
 
-
+app.include_router(router, prefix="/api")
+app.include_router(router, prefix="/api/backend")
 app.include_router(router)
 
 @app.get("/")
